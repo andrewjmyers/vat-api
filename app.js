@@ -1,5 +1,6 @@
 var express = require('express');
 var app = express();
+app.set('json spaces', 2);
 var vatsim = require('./app/vatsim');
 var js2xmlparser = require("js2xmlparser");
 
