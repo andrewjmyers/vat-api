@@ -3,25 +3,78 @@ var app = express();
 var vatsim = require('./app/vatsim');
 var js2xmlparser = require("js2xmlparser");
 
+function dataUpdated() {
+	console.log(new Date() + ": Data updated, updating again in 3 minutes");
+
+	mins = 3 * 60 * 1000;
+	setInterval(function() {
+		updateData();
+	}, mins);
+}
+
+function dataFailed() {
+	updateData();
+}
+
 function updateData() {
-	vatsim.updateVatsimData();
+	vatsim.updateVatsimData(dataUpdated, dataFailed);
 }
 
 vatsim.init(updateData);
 
 app.get('/clients/', function (req, res) {
-	if(req.query.type)
+	if(req.query.filter)
 	{
-		if(req.query.type == 1)
-		{
-			res.json(vatsim.getCallsignsToClients());
-			return;
-		}
+		filter = req.query.filter.replace(" ", "").split(",");
+		res.json(vatsim.getClients(filter));
 	}
-	res.json(vatsim.getClients());
+	else
+	{
+		res.json(vatsim.getClients());
+	}
 });
 
-app.get('/clients/:id', function (req, res) {
+app.get('/general/', function(req, res) {
+	res.json(vatsim.getGeneral());
+});
+
+app.get('/voiceServers/', function (req, res) {
+	if(req.query.filter)
+	{
+		filter = req.query.filter.replace(" ", "").split(",");
+		res.json(vatsim.getVoiceServers(filter));
+	}
+	else
+	{
+		res.json(vatsim.getVoiceServers());
+	}
+});
+
+app.get('/servers/', function (req, res) {
+	if(req.query.filter)
+	{
+		filter = req.query.filter.replace(" ", "").split(",");
+		res.json(vatsim.getServers(filter));
+	}
+	else
+	{
+		res.json(vatsim.getServers());
+	}
+});
+
+app.get('/prefiled/', function (req, res) {
+	if(req.query.filter)
+	{
+		filter = req.query.filter.replace(" ", "").split(",");
+		res.json(vatsim.getPrefiled(filter));
+	}
+	else
+	{
+		res.json(vatsim.getPrefiled());
+	}
+});
+
+app.get('/clients/:id', function(req, res) {
 	res.json(vatsim.getClient(req.params.id));
 });
 

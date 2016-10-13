@@ -1,9 +1,201 @@
 var clients = [];
+var general = {};
+var voiceServers = [];
+var servers = [];
+var prefiledFPs = [];
+
 var callsignToClient = {};
 var dataUrls = [];
 
 var fs = require('fs');
 var request = require('request');
+
+
+function parseClients(c)
+{
+	clients = [];
+	
+	for(line in c)
+	{
+		client = {};
+		things = c[line].split(":");
+		client["callsign"] = things[0];
+		client["cid"] = things[1];
+		client["name"] = things[2];
+		client["clienttype"] = things[3];
+		client["frequency"] = things[4];
+		client["latitude"] = things[5];
+		client["longitude"] = things[6];
+		client["altitude"] = things[7];
+		client["groundspeed"] = things[8];
+		client["planned_aircraft"] = things[9];
+		client["planned_tascruse"] = things[10];
+		client["planned_depairport"] = things[11];
+		client["planned_altitude"] = things[12];
+		client["planned_destairport"] = things[13];
+		client["server"] = things[14];
+		client["protrevision"] = things[15];
+		client["rating"] = things[16];
+		client["transponder"] = things[17];
+		client["facilitytype"] = things[18];
+		client["visualrange"] = things[19];
+		client["planned_revision"] = things[20];
+		client["planned_flighttype"] = things[21];
+		client["planed_deptime"] = things[22];
+		client["planned_actdeptime"] = things[23];
+		client["planned_hrsenroute"] = things[24];
+		client["planed_minenroute"] = things[25];
+		client["planned_hrsfuel"] = things[26];
+		client["planned_minfuel"] = things[27];
+		client["planned_altairport"] = things[28];
+		client["planned_remarks"] = things[29];
+		client["planned_route"] = things[30];
+		client["planned_depairport_lat"] = things[31];
+		client["planned_depairport_lon"] = things[32];
+		client["planned_destairport_lat"] = things[33];
+		client["planned_destairport_lon"] = things[34];
+		client["atis_message"] = things[35];
+		client["time_last_atis_received"] = things[36];
+		client["time_logon"] = things[37];
+		client["heading"] = things[38];
+		client["QNH_iHg"] = things[39];
+		client["QNH_Mb"] = things[40];
+
+		clients.push(client);
+		callsignToClient[client.callsign] = client;
+	}
+}
+
+function parseGeneral(data)
+{
+	general = {};
+	for(line in data)
+	{
+		l = data[line].replace(" ", "");
+		general[l.split("=")[0]] = l.split("=")[1];
+	}
+}
+
+function parseServers(data)
+{
+	servers = [];
+
+	for(line in data)
+	{
+		server = {};
+		things = data[line].split(":");
+
+		l = data[line].replace(" ", "");
+		server["ident"] = things[0];
+		server["hostname"] = things[1];
+		server["location"] = things[2];
+		server["name"] = things[3];
+		server["clientsConnectionAllowed"] = things[4];
+
+		servers.push(server);
+	}
+}
+
+function parsePrefile(data)
+{
+	prefiledFPs = [];
+
+	for(line in data)
+	{
+		client = {};
+		things = data[line].split(":");
+		client["callsign"] = things[0];
+		client["cid"] = things[1];
+		client["name"] = things[2];
+		client["clienttype"] = things[3];
+		client["frequency"] = things[4];
+		client["latitude"] = things[5];
+		client["longitude"] = things[6];
+		client["altitude"] = things[7];
+		client["groundspeed"] = things[8];
+		client["planned_aircraft"] = things[9];
+		client["planned_tascruse"] = things[10];
+		client["planned_depairport"] = things[11];
+		client["planned_altitude"] = things[12];
+		client["planned_destairport"] = things[13];
+		client["server"] = things[14];
+		client["protrevision"] = things[15];
+		client["rating"] = things[16];
+		client["transponder"] = things[17];
+		client["facilitytype"] = things[18];
+		client["visualrange"] = things[19];
+		client["planned_revision"] = things[20];
+		client["planned_flighttype"] = things[21];
+		client["planed_deptime"] = things[22];
+		client["planned_actdeptime"] = things[23];
+		client["planned_hrsenroute"] = things[24];
+		client["planed_minenroute"] = things[25];
+		client["planned_hrsfuel"] = things[26];
+		client["planned_minfuel"] = things[27];
+		client["planned_altairport"] = things[28];
+		client["planned_remarks"] = things[29];
+		client["planned_route"] = things[30];
+		client["planned_depairport_lat"] = things[31];
+		client["planned_depairport_lon"] = things[32];
+		client["planned_destairport_lat"] = things[33];
+		client["planned_destairport_lon"] = things[34];
+		client["atis_message"] = things[35];
+		client["time_last_atis_received"] = things[36];
+		client["time_logon"] = things[37];
+		client["heading"] = things[38];
+		client["QNH_iHg"] = things[39];
+		client["QNH_Mb"] = things[40];
+
+		prefiledFPs.push(client);
+	}
+}
+
+function parseVoice(data)
+{
+	voiceServers = [];
+	for(line in data)
+	{
+		l = data[line];
+		things = l.split(":");
+		voice = {};
+		voice["address"] = things[0];
+		voice["location"] = things[1];
+		voice["name"] = things[2];
+		voice["clients_allowed"] = things[3];
+		voice["type"] = things[4];
+		voiceServers.push(voice);
+	}
+}
+
+function filterVatsim(filter, a)
+{
+	n = [];
+
+	for(c in a)
+	{
+		client = a[c];
+		n.push(filterSingle(filter, client));
+	}
+
+	return n;
+}
+
+function filterSingle(filter, c)
+{
+	nc = {};
+
+	for(f in filter)
+	{
+		fi = filter[f];
+
+		if(c[fi])
+		{
+			nc[fi] = c[fi];
+		}
+	}
+
+	return nc;
+}
 
 module.exports = {
 	getClient: function(id) {
@@ -16,8 +208,40 @@ module.exports = {
 			return {'error': 'No client found with ID ' + id};
 		}
 	},
-	getClients: function() {
+	getClients: function(filter) {
+		if(filter)
+		{
+			return filterVatsim(filter, clients);
+		}
+
 		return clients;
+	},
+	getVoiceServers: function(filter) {
+		if(filter)
+		{
+			return filterVatsim(filter, voiceServers);
+		}
+
+		return voiceServers;
+	},
+	getGeneral: function() {
+		return general;
+	},
+	getPrefiled: function(filter) {
+		if(filter)
+		{
+			return filterVatsim(filter, prefiledFPs);
+		}
+
+		return prefiledFPs;
+	},
+	getServers: function(filter) {
+		if(filter)
+		{
+			return filterVatsim(filter, servers);
+		}
+
+		return servers;
 	},
 	getCallsignsToClients: function() {
 		return callsignToClient;
@@ -44,7 +268,7 @@ module.exports = {
 			callback();
 		});
 	},
-	updateVatsimData: function()
+	updateVatsimData: function(dataUpdated, dataFailed)
 	{
 		if(dataUrls.length > 0)
 		{
@@ -52,79 +276,115 @@ module.exports = {
 
 			request({
 				url: url,
-				json: false
+				json: false,
+				timeout: 2000
 			}, function(error, response, body) {
 				if(!error && response.statusCode === 200)
 				{
 					lineNumber = 0;
-					console.log("response");
 
 					lines = response.body.split("\n");
+					inSection = false;
+					currentSection = "";
+					data = [];
 
-					foundClients = false;
-					clients = [];
+					if(lines.length < 1 || lines[4].includes("DOWNLOAD ALLOTMENT EXCEEDED"))
+					{
+						dataFailed();
+						return;
+					}
+
+					console.log(new Date() + ": Data collection started");
 
 					for(line in lines)
 					{
-						if(!foundClients && lines[line].includes("!CLIENTS:"))
-						{
-							console.log("clients");
-							foundClients = true;
-						}
-						else if(foundClients && lines[line].startsWith(";"))
-						{
-							foundClients = false;
-						}
-						else if(foundClients)
-						{
-							client = {};
-							things = lines[line].split(":");
-							client["callsign"] = things[0];
-							client["cid"] = things[1];
-							client["name"] = things[2];
-							client["clienttype"] = things[3];
-							client["frequency"] = things[4];
-							client["latitude"] = things[5];
-							client["longitude"] = things[6];
-							client["altitude"] = things[7];
-							client["groundspeed"] = things[8];
-							client["planned_aircraft"] = things[9];
-							client["planned_tascruse"] = things[10];
-							client["planned_depairport"] = things[11];
-							client["planned_altitude"] = things[12];
-							client["planned_destairport"] = things[13];
-							client["server"] = things[14];
-							client["protrevision"] = things[15];
-							client["rating"] = things[16];
-							client["transponder"] = things[17];
-							client["facilitytype"] = things[18];
-							client["visualrange"] = things[19];
-							client["planned_revision"] = things[20];
-							client["planned_flighttype"] = things[21];
-							client["planed_deptime"] = things[22];
-							client["planned_actdeptime"] = things[23];
-							client["planned_hrsenroute"] = things[24];
-							client["planed_minenroute"] = things[25];
-							client["planned_hrsfuel"] = things[26];
-							client["planned_minfuel"] = things[27];
-							client["planned_altairport"] = things[28];
-							client["planned_remarks"] = things[29];
-							client["planned_route"] = things[30];
-							client["planned_depairport_lat"] = things[31];
-							client["planned_depairport_lon"] = things[32];
-							client["planned_destairport_lat"] = things[33];
-							client["planned_destairport_lon"] = things[34];
-							client["atis_message"] = things[35];
-							client["time_last_atis_received"] = things[36];
-							client["time_logon"] = things[37];
-							client["heading"] = things[38];
-							client["QNH_iHg"] = things[39];
-							client["QNH_Mb"] = things[40];
+						l = lines[line];
 
-							clients.push(client);
-							callsignToClient[client.callsign] = client;
+						if(l === ";   END")
+						{
+							if(wasInSection)
+							{
+								if(currentSection === "GENERAL")
+								{
+									parseGeneral(data);
+									data = [];
+								}
+								else if (currentSection === "CLIENTS")
+								{
+									parseClients(data);
+									data = [];
+								}
+								else if (currentSection === "PREFILE")
+								{
+									parsePrefile(data);
+									data = [];
+								}
+								else if (currentSection === "SERVERS")
+								{
+									parseServers(data);
+									data = [];
+								}
+								else if (currentSection === "VOICE SERVERS")
+								{
+									parseVoice(data);
+									data = [];
+								}
+							}
+
+							dataUpdated();
+							return;
+						}
+						else if(l.startsWith(";"))
+						{
+
+						}
+						else if(inSection && !l.startsWith("!"))
+						{
+							data.push(l);
+						}
+						else if(l.startsWith("!"))
+						{
+							wasInSection = inSection;
+
+							inSection = true;
+							newCurrentSection = l.replace("!", "").replace(";", "").replace(":", "");
+							
+							if(wasInSection)
+							{
+								if(currentSection === "GENERAL")
+								{
+									parseGeneral(data);
+									data = [];
+								}
+								else if (currentSection === "CLIENTS")
+								{
+									parseClients(data);
+									data = [];
+								}
+								else if (currentSection === "PREFILE")
+								{
+									parsePrefile(data);
+									data = [];
+								}
+								else if (currentSection === "SERVERS")
+								{
+									parseServers(data);
+									data = [];
+								}
+								else if (currentSection === "VOICE SERVERS")
+								{
+									parseVoice(data);
+									data = [];
+								}
+							}
+
+							currentSection = newCurrentSection;
 						}
 					}
+				}
+				else
+				{
+					dataFailed();
 				}
 			});
 		}
