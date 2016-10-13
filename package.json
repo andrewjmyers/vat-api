@@ -1,0 +1,24 @@
+{
+  "name": "vat-api",
+  "version": "1.0.0",
+  "description": "An API to simplify gathering live data from VATSIM",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/tobystrong/vat-api.git"
+  },
+  "author": "Toby Strong",
+  "license": "SEE LICENSE IN LICENSE.MD",
+  "bugs": {
+    "url": "https://github.com/tobystrong/vat-api/issues"
+  },
+  "homepage": "https://github.com/tobystrong/vat-api#readme",
+  "dependencies": {
+    "express": "^4.14.0",
+    "js2xmlparser": "^2.0.2",
+    "request": "^2.75.0"
+  }
+}
