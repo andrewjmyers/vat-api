@@ -177,7 +177,7 @@ function parsePrefile(data)
 
 		rawClient = [];
 
-		for(i = 0; i <= 40; i++)
+		for(i = 0; i <= things.length; i++)
 		{
 			rawClient.push(things[i]);
 		}
@@ -266,7 +266,7 @@ function buildRaw()
 
 	raw = raw + ";\n";
 	raw = raw + ";\n";
-	raw = raw + "!CLIENTS:\n";
+	raw = raw + "!CLIENTS\n";
 
 	for(v in rawClients)
 	{
