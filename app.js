@@ -23,7 +23,9 @@ function updateData() {
 }
 
 app.use('/pages', express.static('views/pages'));
+app.use('/vatapi/pages', express.static('views/pages'));
 app.use('/static', express.static('public'));
+app.use('/vatapi/static', express.static('public'));
 
 vatsim.init(updateData);
 
