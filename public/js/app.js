@@ -5,8 +5,8 @@ angular.module('docsApp', [
 	$locationProvider.hashPrefix("!");
 
 	$routeProvider.when('/', {
-		templateUrl: '/pages/default.html'
+		templateUrl: 'pages/default.html'
 	}).when('/clients', {
-		templateUrl: '/pages/clients.html'
+		templateUrl: 'pages/clients.html'
 	}).otherwise('/');
 }]);
