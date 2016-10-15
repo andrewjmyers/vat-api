@@ -24,7 +24,7 @@ app.use('/vatapi/static', express.static('public'));
 
 vatsim.init(updateData);
 
-mins = 3 * 60 * 1000;
+mins = 1 * 60 * 1000;
 var interval = setInterval(function() {
 	updateData();
 }, mins);
