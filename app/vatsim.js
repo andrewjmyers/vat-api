@@ -274,6 +274,8 @@ function buildRaw()
 		raw = raw + s.join(":") + "\n";
 	}
 
+	raw = raw + "ZXP02:1326998:Max Tilmans EHAM:PILOT::52.31423:4.80754:-6:0:EC35:450:EHAM:1000:EHAM:GERMANY:100:1:6220:::3:V:1740:0:0:35:2:6:EHAM:from temporary helispot /v/:WEST DEP:0:0:0:0:::20161015182440:286:29.883:1011:\n";
+
 	raw = raw + ";\n";
 	raw = raw + ";\n";
 	raw = raw + "!SERVERS:\n";
