@@ -87,8 +87,8 @@ function parseGeneral(data)
 	general = {};
 	for(line in data)
 	{
-		l = data[line].replace(" ", "");
-		general[l.split("=")[0].replace(" ", "")] = l.split("=")[1].replace(" ", "");
+		l = data[line];
+		general[l.split("=")[0]] = l.split("=")[1];
 	}
 }
 
