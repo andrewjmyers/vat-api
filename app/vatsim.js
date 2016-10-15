@@ -253,8 +253,6 @@ function buildRaw()
 	{
 		raw = raw + key + "=" + general[key] + "\n";
 	}
-
-	raw = raw + "\n";
 	raw = raw + ";\n";
 	raw = raw + ";\n";
 	raw = raw + "!VOICE SERVERS:\n";
@@ -265,6 +263,7 @@ function buildRaw()
 		raw = raw + s.join(":") + ":\n";
 	}
 
+	raw = raw + "\n";
 	raw = raw + ";\n";
 	raw = raw + ";\n";
 	raw = raw + "!CLIENTS:\n";
