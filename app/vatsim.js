@@ -284,6 +284,8 @@ function buildRaw()
 		raw = raw + s.join(":") + "\n";
 	}
 
+	raw = raw + "DANK:dank.com:Meme Lan:UK:1:\n";
+
 	raw = raw + ";\n";
 	raw = raw + ";\n";
 	raw = raw + "!PREFILE:\n";
