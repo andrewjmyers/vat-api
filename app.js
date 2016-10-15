@@ -3,6 +3,7 @@ var app = express();
 app.set('json spaces', 2);
 var vatsim = require('./app/vatsim');
 var js2xmlparser = require("js2xmlparser");
+var path = require('path');
 
 function dataUpdated() {
 	console.log(new Date() + ": Data updated, updating again in 3 minutes");
@@ -21,7 +22,14 @@ function updateData() {
 	vatsim.updateVatsimData(dataUpdated, dataFailed);
 }
 
+app.use('/pages', express.static('views/pages'));
+app.use('/static', express.static('public'));
+
 vatsim.init(updateData);
+
+app.get('/', function (req, res) {
+	res.sendFile(path.join(__dirname + '/views/index.html'));
+});
 
 app.get('/clients/', function (req, res) {
 	if(req.query.filter)
