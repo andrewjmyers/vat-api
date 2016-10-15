@@ -261,7 +261,7 @@ function buildRaw()
 	for(v in rawVoiceServers)
 	{
 		s = rawVoiceServers[v];
-		raw = raw + s.join(":") + "\n";
+		raw = raw + s.join(":") + ":\n";
 	}
 
 	raw = raw + ";\n";
