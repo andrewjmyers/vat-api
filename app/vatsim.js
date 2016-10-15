@@ -256,7 +256,7 @@ function buildRaw()
 
 	raw = raw + ";\n";
 	raw = raw + ";\n";
-	raw = raw + "!VOICE SERVERS:";
+	raw = raw + "!VOICE SERVERS:\n";
 
 	for(v in rawVoiceServers)
 	{
