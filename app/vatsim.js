@@ -271,7 +271,7 @@ function buildRaw()
 	for(v in rawClients)
 	{
 		s = rawClients[v];
-		raw = raw + s.join(":") + "\n";
+		raw = raw + s.join(":") + ":\n";
 	}
 
 	raw = raw + ";\n";
