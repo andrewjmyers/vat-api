@@ -1,11 +1,17 @@
 var clients = [];
+var rawClients = [];
 var general = {};
 var voiceServers = [];
+var rawVoiceServers = [];
 var servers = [];
+var rawServers = [];
 var prefiledFPs = [];
+var rawPrefiledFPs = [];
 
 var callsignToClient = {};
 var dataUrls = [];
+
+var raw = "";
 
 var fs = require('fs');
 var request = require('request');
@@ -14,6 +20,7 @@ var request = require('request');
 function parseClients(c)
 {
 	clients = [];
+	rawClients = [];
 	
 	for(line in c)
 	{
@@ -61,6 +68,15 @@ function parseClients(c)
 		client["QNH_iHg"] = things[39];
 		client["QNH_Mb"] = things[40];
 
+		rawClient = [];
+
+		for(i = 0; i <= 40; i++)
+		{
+			rawClient.push(things[i]);
+		}
+
+		rawClients.push(rawClient);
+
 		clients.push(client);
 		callsignToClient[client.callsign] = client;
 	}
@@ -79,6 +95,7 @@ function parseGeneral(data)
 function parseServers(data)
 {
 	servers = [];
+	rawServers = [];
 
 	for(line in data)
 	{
@@ -92,6 +109,15 @@ function parseServers(data)
 		server["name"] = things[3];
 		server["clientsConnectionAllowed"] = things[4];
 
+		rawServer = [];
+
+		for(i = 0; i <= 4; i++)
+		{
+			rawServer.push(things[i]);
+		}
+
+		rawServers.push(rawServer);
+
 		servers.push(server);
 	}
 }
@@ -99,6 +125,7 @@ function parseServers(data)
 function parsePrefile(data)
 {
 	prefiledFPs = [];
+	rawPrefiledFPs = [];
 
 	for(line in data)
 	{
@@ -147,12 +174,23 @@ function parsePrefile(data)
 		client["QNH_Mb"] = things[40];
 
 		prefiledFPs.push(client);
+
+		rawClient = [];
+
+		for(i = 0; i <= 40; i++)
+		{
+			rawClient.push(things[i]);
+		}
+
+		rawPrefiledFPs.push(rawClient);
 	}
 }
 
 function parseVoice(data)
 {
 	voiceServers = [];
+	rawVoiceServers = [];
+
 	for(line in data)
 	{
 		l = data[line];
@@ -164,6 +202,15 @@ function parseVoice(data)
 		voice["clients_allowed"] = things[3];
 		voice["type"] = things[4];
 		voiceServers.push(voice);
+
+		rawVoice = [];
+
+		for(i = 0; i <= 4; i++)
+		{
+			rawVoice.push(things[i]);
+		}
+
+		rawVoiceServers.push(rawVoice);
 	}
 }
 
@@ -195,6 +242,60 @@ function filterSingle(filter, c)
 	}
 
 	return nc;
+}
+
+function buildRaw()
+{
+	raw = "";
+	raw = raw + "!GENERAL:\n";
+
+	for(key in general)
+	{
+		raw = raw + key + "=" + general[key] + "\n";
+	}
+
+	raw = raw + ";\n";
+	raw = raw + ";\n";
+	raw = raw + "!VOICE SERVERS:";
+
+	for(v in rawVoiceServers)
+	{
+		s = rawVoiceServers[v];
+		raw = raw + s.join(":") + "\n";
+	}
+
+	raw = raw + ";\n";
+	raw = raw + ";\n";
+	raw = raw + "!CLIENTS:\n";
+
+	for(v in rawClients)
+	{
+		s = rawClients[v];
+		raw = raw + s.join(":") + "\n";
+	}
+
+	raw = raw + ";\n";
+	raw = raw + ";\n";
+	raw = raw + "!SERVERS:\n";
+
+	for(v in rawServers)
+	{
+		s = rawServers[v];
+		raw = raw + s.join(":") + "\n";
+	}
+
+	raw = raw + ";\n";
+	raw = raw + ";\n";
+	raw = raw + "!PREFILE:\n";
+
+	for(v in rawPrefiledFPs)
+	{
+		s = rawPrefiledFPs[v];
+		raw = raw + s.join(":") + "\n";
+	}
+
+	raw = raw + ";\n";
+	raw = raw + ";   END";
 }
 
 module.exports = {
@@ -268,6 +369,9 @@ module.exports = {
 			callback();
 		});
 	},
+	getRaw: function() {
+		return raw;
+	},
 	updateVatsimData: function(dataUpdated, dataFailed)
 	{
 		if(dataUrls.length > 0)
@@ -331,6 +435,7 @@ module.exports = {
 								}
 							}
 
+							buildRaw();
 							dataUpdated();
 							return;
 						}

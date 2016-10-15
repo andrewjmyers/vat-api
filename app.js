@@ -7,11 +7,6 @@ var path = require('path');
 
 function dataUpdated() {
 	console.log(new Date() + ": Data updated, updating again in 3 minutes");
-
-	mins = 3 * 60 * 1000;
-	setInterval(function() {
-		updateData();
-	}, mins);
 }
 
 function dataFailed() {
@@ -29,6 +24,11 @@ app.use('/vatapi/static', express.static('public'));
 
 vatsim.init(updateData);
 
+mins = 3 * 60 * 1000;
+var interval = setInterval(function() {
+	updateData();
+}, mins);
+
 app.get('/', function (req, res) {
 	res.sendFile(path.join(__dirname + '/views/index.html'));
 });
@@ -43,6 +43,11 @@ app.get('/clients/', function (req, res) {
 	{
 		res.json(vatsim.getClients());
 	}
+});
+
+app.get('/raw/', function(req, res) {
+	res.set('Content-Type', 'text/plain')
+	res.send(vatsim.getRaw());
 });
 
 app.get('/general/', function(req, res) {
